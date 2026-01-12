@@ -1,0 +1,33 @@
+---
+- name: "Basic configuration"
+  hosts: hosts
+  become: yes
+
+  tasks:
+    - name: "create user"
+      user:
+        name: myuser
+        state: present
+
+    - name: "add user to sudouser"
+      user:
+        name: myuser
+        groups: wheel
+        append: yes
+    - name: "print message"
+      debug:
+        msg: "User created"
+    - name: "create files"
+      file:
+        path: "/home/ec2-user/file{{ item }}.txt"
+        state: touch
+      loop: "{{ range(1,6) | list }}"
+    - name: "install apache"
+      yum:
+        name: httpd
+        state: present
+    - name: "start apache server"
+      service:
+        name: httpd
+        state: started
+        enabled: yes
